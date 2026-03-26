@@ -366,6 +366,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
   <div class="dtabs">
     <button class="dtab active" onclick="showDTab('ficha',this)">Ficha</button>
     <button class="dtab" onclick="showDTab('adec',this)">Adecuaciones</button>
+    <button class="dtab" onclick="showDTab('padres',this)">Padres / Familia</button>
     <button class="dtab" onclick="showDTab('profs',this)">Profesionales</button>
     <button class="dtab" onclick="showDTab('arch',this)">Archivos</button>
     <button class="dtab" onclick="showDTab('notas',this)">Notas</button>
@@ -434,11 +435,55 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
         <div class="tagl" id="eAcTags"></div>
         <div class="flex" style="gap:7px;"><input class="fi2" id="eAcInp" type="text" placeholder="Escribir acuerdo…" onkeydown="if(event.key==='Enter')addAc()" /><button class="btn btn-g btn-sm" onclick="addAc()">Agregar</button></div>
       </div>
-      <div class="fg"><label class="fl">Recordatorio de seguimiento</label><select class="fs" id="eRem"><option value="0">Sin recordatorio</option><option value="7">En 1 semana</option><option value="14">En 2 semanas</option><option value="30">En 1 mes</option><option value="60">En 2 meses</option></select></div>
+      <div class="fg"><label class="fl">Fecha exacta del recordatorio</label><input class="fi2" id="eRem" type="date" placeholder="Elegí la fecha…" /></div>
     </div>
     <div class="mf">
       <button class="btn btn-g" onclick="closeModal('mEnc')">Cancelar</button>
       <button class="btn btn-p" onclick="saveEnc()">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL PADRE/MADRE -->
+<div class="mbg" id="mPadre">
+  <div class="modal">
+    <div class="mh"><div class="mt" id="mPadreT">Agregar familiar</div><button class="mx" onclick="closeModal('mPadre')">✕</button></div>
+    <div class="mb">
+      <div class="fg"><label class="fl">Nombre</label><input class="fi2" id="padNom" type="text" placeholder="Nombre y apellido" /></div>
+      <div class="fr">
+        <div class="fg"><label class="fl">Vínculo</label><select class="fs" id="padVinculo"><option value="Mamá">Mamá</option><option value="Papá">Papá</option><option value="Tutor/a">Tutor/a</option><option value="Abuelo/a">Abuelo/a</option><option value="Otro">Otro</option></select></div>
+        <div class="fg"><label class="fl">Teléfono</label><input class="fi2" id="padTel" type="text" /></div>
+      </div>
+      <div class="fg"><label class="fl">Email</label><input class="fi2" id="padEmail" type="email" placeholder="correo@ejemplo.com" /></div>
+      <div class="fg"><label class="fl">Notas adicionales</label><textarea class="fta" id="padNota" placeholder="Horarios de contacto, preferencias…" style="min-height:50px;"></textarea></div>
+    </div>
+    <div class="mf">
+      <button class="btn btn-g" onclick="closeModal('mPadre')">Cancelar</button>
+      <button class="btn btn-p" onclick="savePadre()">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL ENCUENTRO PADRES -->
+<div class="mbg" id="mEncPadre">
+  <div class="modal">
+    <div class="mh"><div class="mt">Registrar encuentro con familia</div><button class="mx" onclick="closeModal('mEncPadre')">✕</button></div>
+    <div class="mb">
+      <div class="fr">
+        <div class="fg"><label class="fl">Fecha</label><input class="fi2" id="epFecha" type="date" /></div>
+        <div class="fg"><label class="fl">Tipo</label><select class="fs" id="epTipo"><option value="reunion">Reunión</option><option value="llamada">Llamada / mensaje</option><option value="nota">Nota en agenda</option><option value="otro">Otro</option></select></div>
+      </div>
+      <div class="fg"><label class="fl">Notas</label><textarea class="fta" id="epNota" placeholder="¿Qué se habló?"></textarea></div>
+      <div class="fg">
+        <label class="fl">Acuerdos</label>
+        <div class="tagl" id="epAcTags"></div>
+        <div class="flex" style="gap:7px;"><input class="fi2" id="epAcInp" type="text" placeholder="Escribir acuerdo…" onkeydown="if(event.key==='Enter')addAcPadre()" /><button class="btn btn-g btn-sm" onclick="addAcPadre()">Agregar</button></div>
+      </div>
+      <div class="fg"><label class="fl">Fecha exacta del recordatorio</label><input class="fi2" id="epRem" type="date" placeholder="Elegí la fecha…" /></div>
+    </div>
+    <div class="mf">
+      <button class="btn btn-g" onclick="closeModal('mEncPadre')">Cancelar</button>
+      <button class="btn btn-p" onclick="saveEncPadre()">Guardar</button>
     </div>
   </div>
 </div>
@@ -582,9 +627,9 @@ function openD(id){
 function closeD(){document.getElementById('dov').classList.remove('open');document.getElementById('drawer').classList.remove('open');}
 function showDTab(tab,btn){
   document.querySelectorAll('.dtab').forEach(b=>b.classList.remove('active'));
-  if(btn)btn.classList.add('active');else document.querySelectorAll('.dtab')[{ficha:0,adec:1,profs:2,arch:3,notas:4}[tab]]?.classList.add('active');
+  if(btn)btn.classList.add('active');else document.querySelectorAll('.dtab')[{ficha:0,adec:1,padres:2,profs:3,arch:4,notas:5}[tab]]?.classList.add('active');
   const a=alumnos.find(x=>x.id===curA),body=document.getElementById('dbody');
-  if(tab==='ficha')rDFicha(a,body);if(tab==='adec')rDAdec(a,body);if(tab==='profs')rDProfs(a,body);if(tab==='arch')rDArch(a,body);if(tab==='notas')rDNotas(a,body);
+  if(tab==='ficha')rDFicha(a,body);if(tab==='adec')rDAdec(a,body);if(tab==='padres')rDPadres(a,body);if(tab==='profs')rDProfs(a,body);if(tab==='arch')rDArch(a,body);if(tab==='notas')rDNotas(a,body);
 }
 
 function rDFicha(a,body){
@@ -688,15 +733,15 @@ function saveP(){
 function delP(pid){const a=alumnos.find(x=>x.id===curA);if(!confirm('¿Eliminás este profesional?'))return;a.profesionales=a.profesionales.filter(x=>x.id!==pid);S.set('alumnos',alumnos);rDProfs(a,document.getElementById('dbody'));}
 
 // ─── ENCUENTROS ───
-function abrirEnc(pid){curP=pid;acPend=[];document.getElementById('eFecha').value=tstr();document.getElementById('eTipo').value='reunion';document.getElementById('eNota').value='';document.getElementById('eRem').value='30';document.getElementById('eAcTags').innerHTML='';openModal('mEnc');}
+function abrirEnc(pid){curP=pid;acPend=[];document.getElementById('eFecha').value=tstr();document.getElementById('eTipo').value='reunion';document.getElementById('eNota').value='';document.getElementById('eRem').value='';document.getElementById('eAcTags').innerHTML='';openModal('mEnc');}
 function addAc(){const i=document.getElementById('eAcInp'),v=i.value.trim();if(!v)return;acPend.push(v);i.value='';rAcTags();}
 function rAcTags(){document.getElementById('eAcTags').innerHTML=acPend.map((t,i)=>`<span class="tag">${t}<span class="tagx" onclick="acPend.splice(${i},1);rAcTags()">×</span></span>`).join('');}
 function saveEnc(){
   const fecha=document.getElementById('eFecha').value;if(!fecha){alert('La fecha es obligatoria.');return;}
-  const rem=parseInt(document.getElementById('eRem').value)||0,remDate=rem?addD(fecha,rem):null;
+  const remDate=document.getElementById('eRem').value||null;
   const a=alumnos.find(x=>x.id===curA),p=a.profesionales.find(x=>x.id===curP);
   if(!p.encuentros)p.encuentros=[];
-  const enc={id:Date.now(),fecha,tipo:document.getElementById('eTipo').value,nota:document.getElementById('eNota').value.trim(),acuerdos:[...acPend],reminder:rem,reminderDate:remDate};
+  const enc={id:Date.now(),fecha,tipo:document.getElementById('eTipo').value,nota:document.getElementById('eNota').value.trim(),acuerdos:[...acPend],reminderDate:remDate};
   p.encuentros.push(enc);
   if(remDate){eventos.push({id:Date.now()+1,titulo:`Seguimiento: ${a.nombre} con ${p.nombre}`,fecha:remDate,alumnoId:a.id,nota:`Recordatorio · ${tipoE(enc.tipo)}`});S.set('eventos',eventos);}
   S.set('alumnos',alumnos);closeModal('mEnc');rDProfs(a,document.getElementById('dbody'));updCounts();
@@ -706,25 +751,56 @@ function delEnc(pid,eid){const a=alumnos.find(x=>x.id===curA),p=a.profesionales.
 // ─── RECORDATORIOS ───
 function getRems(){
   const today=new Date();today.setHours(0,0,0,0);const res=[];
-  for(const a of alumnos)for(const p of(a.profesionales||[]))for(const e of(p.encuentros||[])){
-    if(!e.reminderDate)continue;
-    const rd=new Date(e.reminderDate);rd.setHours(0,0,0,0);
-    // mostrar con 7 días de anticipación
-    const showFrom=new Date(rd);showFrom.setDate(showFrom.getDate()-7);
-    const diff=Math.floor((rd-today)/86400000);
-    if(today>=showFrom&&diff>=-1)res.push({alumno:a,prof:p,enc:e,diff});
+  for(const a of alumnos){
+    for(const p of(a.profesionales||[]))for(const e of(p.encuentros||[])){
+      if(!e.reminderDate)continue;
+      const rd=new Date(e.reminderDate);rd.setHours(0,0,0,0);
+      const showFrom=new Date(rd);showFrom.setDate(showFrom.getDate()-7);
+      const diff=Math.floor((rd-today)/86400000);
+      if(today>=showFrom&&diff>=-1)res.push({alumno:a,actor:p.nombre,tipo:'prof',enc:e,diff});
+    }
+    for(const p of(a.padres||[]))for(const e of(p.encuentros||[])){
+      if(!e.reminderDate)continue;
+      const rd=new Date(e.reminderDate);rd.setHours(0,0,0,0);
+      const showFrom=new Date(rd);showFrom.setDate(showFrom.getDate()-7);
+      const diff=Math.floor((rd-today)/86400000);
+      if(today>=showFrom&&diff>=-1)res.push({alumno:a,actor:p.nombre+' ('+p.vinculo+')',tipo:'padre',enc:e,diff});
+    }
   }
   return res.sort((a,b)=>a.diff-b.diff);
 }
+function getTareasPend(){
+  const today=new Date();today.setHours(0,0,0,0);const res=[];
+  for(const g of GRADOS)for(const t of(tareas[g]||[])){
+    if(t.done)continue;
+    let diff=null;
+    if(t.fecha){const td=new Date(t.fecha);td.setHours(0,0,0,0);diff=Math.floor((td-today)/86400000);if(diff>7)continue;}
+    res.push({tarea:t,grado:g,diff});
+  }
+  return res.sort((a,b)=>{if(a.diff===null&&b.diff===null)return 0;if(a.diff===null)return 1;if(b.diff===null)return -1;return a.diff-b.diff;});
+}
 function rRems(){
-  const rems=getRems(),el=document.getElementById('remsContent');
-  if(!rems.length){el.innerHTML=`<div class="empty"><div class="ei">✅</div><div class="em">Todo al día</div><div class="es">No hay recordatorios esta semana</div></div>`;return;}
-  el.innerHTML=rems.map(({alumno:a,prof:p,enc,diff})=>{
-    const c=gc(a.grado),urg=diff<0?'urg':diff<=2?'wrn':'';
-    const dm=diff<0?`Venció hace ${Math.abs(diff)}d`:diff===0?'Vence hoy':`En ${diff}d`;
-    const dc=diff<0?'#B5451B':diff<=2?'#8A5C0A':'var(--text3)';
-    return`<div class="rcard ${urg}"><div class="av" style="background:${c.bg};color:${c.text};">${ini(a.nombre)}</div><div style="flex:1;"><div style="font-size:14px;font-weight:500;">${a.nombre} <span style="font-size:12px;font-weight:400;color:var(--text3);">· ${a.grado}</span></div><div style="font-size:13px;color:var(--text2);margin-top:2px;">Retomar con <strong>${p.nombre}</strong> (${p.especialidad||''})<br>Último encuentro: ${fmtD(enc.fecha)}</div><div style="font-size:11px;color:${dc};font-family:'DM Mono',monospace;margin-top:4px;">⏰ ${dm}</div></div><button class="btn btn-g btn-sm" onclick="openD(${a.id})">Ver ficha</button></div>`;
-  }).join('');
+  const rems=getRems(),tareasPend=getTareasPend(),el=document.getElementById('remsContent');
+  const remHTML=rems.length===0?`<div class="empty" style="padding:20px 0;"><div class="ei">✅</div><div class="em" style="font-size:13px;">Sin encuentros pendientes</div></div>`:
+    rems.map(({alumno:a,actor,tipo,enc,diff})=>{
+      const c=gc(a.grado),urg=diff<0?'urg':diff<=2?'wrn':'';
+      const dm=diff<0?`Venció hace ${Math.abs(diff)}d`:diff===0?'Vence hoy':`En ${diff}d`;
+      const dc=diff<0?'#B5451B':diff<=2?'#8A5C0A':'var(--text3)';
+      const ico=tipo==='padre'?'👨‍👩‍👧':'👤';
+      return`<div class="rcard ${urg}"><div class="av" style="background:${c.bg};color:${c.text};">${ini(a.nombre)}</div><div style="flex:1;"><div style="font-size:14px;font-weight:500;">${a.nombre} <span style="font-size:12px;font-weight:400;color:var(--text3);">· ${a.grado}</span></div><div style="font-size:13px;color:var(--text2);margin-top:2px;">${ico} <strong>${actor}</strong> · Últ: ${fmtD(enc.fecha)}</div><div style="font-size:11px;color:${dc};font-family:'DM Mono',monospace;margin-top:4px;">⏰ ${dm} · ${fmtD(enc.reminderDate)}</div></div><button class="btn btn-g btn-sm" onclick="openD(${a.id})">Ver</button></div>`;
+    }).join('');
+  const tareasHTML=tareasPend.length===0?`<div class="empty" style="padding:20px 0;"><div class="ei">✅</div><div class="em" style="font-size:13px;">Sin tareas pendientes</div></div>`:
+    tareasPend.map(({tarea:t,grado:g,diff})=>{
+      const c=gc(g);
+      const urg=diff!==null&&diff<0?'urg':diff!==null&&diff<=2?'wrn':'';
+      const dm=diff===null?'Sin fecha':diff<0?`Venció hace ${Math.abs(diff)}d`:diff===0?'Vence hoy':`En ${diff}d`;
+      const dc=diff===null?'var(--text3)':diff<0?'#B5451B':diff<=2?'#8A5C0A':'#3D6B52';
+      return`<div class="rcard ${urg}" style="gap:10px;"><div style="width:10px;height:10px;border-radius:50%;background:${c.mid};flex-shrink:0;margin-top:5px;"></div><div style="flex:1;"><div style="font-size:14px;font-weight:500;">${t.nombre||t.text}</div>${t.descripcion?`<div style="font-size:12px;color:var(--text2);margin-top:2px;line-height:1.4;">${t.descripcion}</div>`:''}<div style="font-size:11px;font-weight:600;color:${c.text};margin-top:3px;">${g} grado</div><div style="font-size:11px;color:${dc};font-family:'DM Mono',monospace;margin-top:3px;">📋 ${dm}</div></div></div>`;
+    }).join('');
+  el.innerHTML=`<div style="display:grid;grid-template-columns:1fr 1fr;gap:22px;">
+    <div><div style="font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:13px;padding-bottom:8px;border-bottom:1px solid var(--border);">👥 Encuentros</div>${remHTML}</div>
+    <div><div style="font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:13px;padding-bottom:8px;border-bottom:1px solid var(--border);">📋 Tareas pendientes</div>${tareasHTML}</div>
+  </div>`;
 }
 
 // ─── CALENDARIO ───
@@ -800,6 +876,59 @@ function addT(g,gi){
 }
 function togT(g,i){tareas[g][i].done=!tareas[g][i].done;S.set('tareas',tareas);rTareas();}
 function delT(g,i){tareas[g].splice(i,1);S.set('tareas',tareas);rTareas();}
+
+// ─── PADRES ───
+function rDPadres(a,body){
+  if(!a.padres)a.padres=[];
+  body.innerHTML=`
+    <div class="fb" style="margin-bottom:13px;"><div class="sec-t" style="margin:0;">Familia / contactos</div><button class="btn btn-g btn-sm" onclick="abrirMPadre(false)">＋ Agregar</button></div>
+    ${!a.padres.length?`<div class="empty"><div class="ei">👨‍👩‍👧</div><div class="em">Sin familiares cargados</div></div>`:
+    a.padres.map(p=>`<div class="pcard"><div class="ph">
+      <div class="av" style="background:#FFF0E6;color:#7A3200;">👤</div>
+      <div style="flex:1;"><div class="pn">${p.nombre}</div><div class="ps">${p.vinculo}</div>${p.tel?`<div class="pc">📞 ${p.tel}</div>`:''}${p.email?`<div class="pc">✉ ${p.email}</div>`:''}${p.nota?`<div style="font-size:12px;color:var(--text2);margin-top:3px;">${p.nota}</div>`:''}</div>
+      <div style="display:flex;gap:5px;"><button class="btn btn-g btn-sm" onclick="abrirMPadre(true,${p.id})">✏</button><button class="btn btn-g btn-sm" onclick="abrirEncPadre(${p.id})">＋ Encuentro</button><button class="btn btn-d btn-sm" onclick="delPadre(${p.id})">✕</button></div>
+    </div>
+    ${p.encuentros?.length?`<div style="border-top:1px solid var(--border-light);padding-top:10px;margin-top:3px;">
+      <div style="font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px;">Historial</div>
+      ${[...p.encuentros].reverse().map(e=>`<div style="background:var(--surface2);border-radius:var(--radius);padding:10px 12px;margin-bottom:6px;">
+        <div class="et"><span class="badge b-gr">${tipoE(e.tipo)}</span><span class="ed">${fmtD(e.fecha)}</span>${e.reminderDate?`<span class="rtag">🔔 ${fmtD(e.reminderDate)}</span>`:''}<button class="btn btn-g btn-sm" style="margin-left:auto;padding:2px 7px;font-size:11px;" onclick="delEncPadre(${p.id},${e.id})">✕</button></div>
+        ${e.nota?`<div class="en">${e.nota}</div>`:''}
+        ${e.acuerdos?.length?`<div class="ea">${e.acuerdos.map(ac=>`<div class="eac"><div class="cb" onclick="this.classList.toggle('done');this.textContent=this.classList.contains('done')?'✓':''"></div><span>${ac}</span></div>`).join('')}</div>`:''}
+      </div>`).join('')}
+    </div>`:`<div style="font-size:12px;color:var(--text3);border-top:1px solid var(--border-light);padding-top:8px;margin-top:3px;">Sin encuentros registrados.</div>`}
+    </div>`).join('')}`;
+}
+let editPadre=false,curPad=null,acPadPend=[];
+function abrirMPadre(isEdit,pid){
+  editPadre=isEdit;
+  if(isEdit){curPad=pid;const a=alumnos.find(x=>x.id===curA),p=a.padres.find(x=>x.id===pid);document.getElementById('padNom').value=p.nombre;document.getElementById('padVinculo').value=p.vinculo;document.getElementById('padTel').value=p.tel||'';document.getElementById('padEmail').value=p.email||'';document.getElementById('padNota').value=p.nota||'';}
+  else{['padNom','padTel','padEmail','padNota'].forEach(i=>document.getElementById(i).value='');document.getElementById('padVinculo').value='Mamá';}
+  document.getElementById('mPadreT').textContent=isEdit?'Editar familiar':'Agregar familiar';
+  openModal('mPadre');
+}
+function savePadre(){
+  const nom=document.getElementById('padNom').value.trim();if(!nom){alert('El nombre es obligatorio.');return;}
+  const d={nombre:nom,vinculo:document.getElementById('padVinculo').value,tel:document.getElementById('padTel').value.trim(),email:document.getElementById('padEmail').value.trim(),nota:document.getElementById('padNota').value.trim()};
+  const a=alumnos.find(x=>x.id===curA);if(!a.padres)a.padres=[];
+  if(editPadre)Object.assign(a.padres.find(x=>x.id===curPad),d);
+  else a.padres.push({id:Date.now(),...d,encuentros:[]});
+  S.set('alumnos',alumnos);closeModal('mPadre');rDPadres(a,document.getElementById('dbody'));
+}
+function delPadre(pid){const a=alumnos.find(x=>x.id===curA);if(!confirm('¿Eliminás este familiar?'))return;a.padres=a.padres.filter(x=>x.id!==pid);S.set('alumnos',alumnos);rDPadres(a,document.getElementById('dbody'));}
+function abrirEncPadre(pid){curPad=pid;acPadPend=[];document.getElementById('epFecha').value=tstr();document.getElementById('epTipo').value='reunion';document.getElementById('epNota').value='';document.getElementById('epRem').value='';document.getElementById('epAcTags').innerHTML='';openModal('mEncPadre');}
+function addAcPadre(){const i=document.getElementById('epAcInp'),v=i.value.trim();if(!v)return;acPadPend.push(v);i.value='';rAcPadreTags();}
+function rAcPadreTags(){document.getElementById('epAcTags').innerHTML=acPadPend.map((t,i)=>`<span class="tag">${t}<span class="tagx" onclick="acPadPend.splice(${i},1);rAcPadreTags()">×</span></span>`).join('');}
+function saveEncPadre(){
+  const fecha=document.getElementById('epFecha').value;if(!fecha){alert('La fecha es obligatoria.');return;}
+  const remDate=document.getElementById('epRem').value||null;
+  const a=alumnos.find(x=>x.id===curA),p=a.padres.find(x=>x.id===curPad);
+  if(!p.encuentros)p.encuentros=[];
+  const enc={id:Date.now(),fecha,tipo:document.getElementById('epTipo').value,nota:document.getElementById('epNota').value.trim(),acuerdos:[...acPadPend],reminderDate:remDate};
+  p.encuentros.push(enc);
+  if(remDate){eventos.push({id:Date.now()+1,titulo:`Seguimiento familia: ${a.nombre} con ${p.nombre}`,fecha:remDate,alumnoId:a.id,nota:`Recordatorio familia`});S.set('eventos',eventos);}
+  S.set('alumnos',alumnos);closeModal('mEncPadre');rDPadres(a,document.getElementById('dbody'));updCounts();
+}
+function delEncPadre(pid,eid){const a=alumnos.find(x=>x.id===curA),p=a.padres.find(x=>x.id===pid);if(!confirm('¿Eliminás este encuentro?'))return;p.encuentros=p.encuentros.filter(x=>x.id!==eid);S.set('alumnos',alumnos);rDPadres(a,document.getElementById('dbody'));}
 
 // ─── PDF ───
 function exportPDF(){
